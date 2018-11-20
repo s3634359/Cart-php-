@@ -1,0 +1,96 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+
+<form action="{{ path_for(('order.create')) }}" method="post" autocomplete="on">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Your details</h3>
+                    <hr>
+                    <div class="form-group">
+                        <lable for="email">Email</lable>
+                        <input type="email" name="email" id="email" class="form-control {% if errors.email %}is-invalid{% endif %}" value="{{ old.email }}" />
+                        <div class="invalid-feedback">
+                            {{ errors.email | first }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <lable for="name">Full name</lable>
+                        <input type="text" name="name" id="name" class="form-control {% if errors.name %}is-invalid{% endif %}" value="{{ old.name }}" />
+                        <div class="invalid-feedback">
+                            {{ errors.name | first }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Shipping address</h3>
+                    <hr>
+                    <div class="form-group">
+                        <label for="address1">Address line 1</label>
+                        <input type="text" name="address1" id="address1" class="form-control {% if errors.address1 %}is-invalid{% endif %}" value="{{ old.address1 }}" />
+                        <div class="invalid-feedback">
+                            {{ errors.address1 | first }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address2">Address line 2(optional)</label>
+                        <input type="text" name="address2" id="address2" class="form-control" value="{{ old.address2 }}" />
+                        <div class="invalid-feedback">
+                            {{ errors.address2 | first }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" name="city" id="city" class="form-control {% if errors.city %}is-invalid{% endif %}" value="{{ old.city }}" />
+                        <div class="invalid-feedback">
+                            {{ errors.city | first }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postal_code">Postal code</label>
+                        <input type="text" name="postal_code" id="postal_code" class="form-control {% if errors.postal_code %}is-invalid{% endif %}" value="{{ old.postal_code }}" />
+                    </div>
+                    <div class="invalid-feedback">
+                        {{ errors.postal_code | first }}
+                    </div>
+                </div>
+            </div>
+            <h3>Payment</h3>
+            <hr>
+            <div id="payment"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card" style="margin-top:10px;">
+                <div class="card body">
+                    <h4 style="padding: 10px;">Your order</h4>
+                    <hr>
+                    {% include 'cart/partials/contents.twig' %}
+                    {% include 'cart/partials/summary.twig' %}
+                    <button type="submit" class="btn btn-primary">Place order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js.braintreegateway.com/js/braintree-2.32.1.min.js"></script>
+<script>
+    var path = "{{ path_for('braintree.token') }}";
+    var token = null;
+    $.ajax({
+        type: 'get',
+        url: path,
+        success: function (data) {
+        console.log(data.token);
+        braintree.setup(data.token, 'dropin', {
+             container: 'payment'
+        });
+        }
+    });
+</script>
+{% endblock %}
